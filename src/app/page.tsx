@@ -15,9 +15,16 @@ import {
   FieldDescription,
   FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+
+
 import LoginForm from "@/components/custom/login_form"
+import SignupForm from "@/components/custom/signup_form"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 export default function Home() {
   return (
     <BackgroundBeamsWithCollision className="min-h-screen w-full">
@@ -70,7 +77,22 @@ export default function Home() {
         {/* w-full on mobile, md:w-4/5 (80%) on desktop */}
         <div className="w-full md:w-4/5 flex grow items-center justify-center p-6    backdrop-blur-xs">
           <div className="max-w-md w-full p-8 rounded-3xl ">
-              <LoginForm />
+         
+              <Tabs defaultValue="LOGIN" className="w-100">
+      <TabsList className="bg-white/10 backdrop-blur-md border-white/50 rounded-xl p-1 mb-8 shadow-lg text-black">
+        <TabsTrigger value="LOGIN" ><div className="text-black text-2xl font-bold hover:text-sky-600">Login</div></TabsTrigger>
+        <TabsTrigger value="SIGNUP"><div className="text-black text-2xl font-bold  hover:text-sky-600">Signup</div></TabsTrigger>
+
+      </TabsList>
+      <TabsContent value="LOGIN">
+ <LoginForm />
+      </TabsContent>
+      <TabsContent value="SIGNUP">
+  <SignupForm />
+      </TabsContent>
+
+
+    </Tabs>
 
           </div>
         </div>
