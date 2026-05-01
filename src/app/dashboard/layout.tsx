@@ -25,26 +25,22 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}  antialiased`}
-      
-    > 
 
 
-      <body >  
+
+      < >  
           <TooltipProvider>
                 <SidebarProvider>
                     <AppSidebar />
-                    <main>
+                    <main className="flex-1 w-full overflow-x-hidden">
                         <SidebarTrigger />
                         {children}
                     </main>
                 </SidebarProvider>
           </TooltipProvider>
           
-        </body>
+        </>
 
-     </html>
+
     );
 }

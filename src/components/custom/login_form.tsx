@@ -1,5 +1,6 @@
     "use client";
     import  {useState} from "react";
+    import {useRouter}from "next/navigation";
     import {signInWithEmailAndPassword} from "firebase/auth";
     import { auth } from "@/lib/firebase";
     import {
@@ -18,6 +19,7 @@
     import { Button } from "@/components/ui/button";
 
     export default function LoginForm() {
+        const router=useRouter();
         const [email,setemail]=useState<string>("");
         const [password,setpassword]=useState<string>("");
         const handleEmailChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
@@ -60,6 +62,8 @@
                 signInWithEmailAndPassword(auth,email,password).then((userCredential)=>{
                     const user=userCredential.user;
                     console.log("User signed in:", user);
+                    router.push("/dashboard");
+
                 }).catch((error)=>{
                     console.error("Error signing in user:", error);
                 });
