@@ -133,7 +133,7 @@ export default function AnalyticsPage() {
   const activeData = useMemo(() => DATA_SETS[timeRange], [timeRange]);
 
   return (
-    <div className="p-6 space-y-6 min-h-screen my-[-40] bg-slate-50/50">
+    <div className="p-6 space-y-6 min-h-screen bg-slate-50/50">
       
       {/* 1. HEADER & INTERACTIVE FILTERS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
