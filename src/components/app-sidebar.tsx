@@ -1,3 +1,4 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -23,8 +24,10 @@ import {
 import Link from "next/link"
 import { Activity, LayoutDashboard,BarChart3, User2 ,Settings,LogOut,ChevronUp} from "lucide-react"
 import { Button } from "./ui/button"
-
+import {usePathname} from "next/navigation"
 export function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <Sidebar>
       <SidebarHeader >
@@ -38,7 +41,7 @@ export function AppSidebar() {
                   Health<span className="text-blue-600"> CARE</span>
                 </span>
                 <span className="text-xs font-medium text-muted-foreground">
-                  B2B Enterprise
+                  B2B Enterprise{pathname}
                 </span>
               </div>
         </SidebarHeader>
@@ -55,36 +58,35 @@ export function AppSidebar() {
   </SidebarGroupAction>
   <SidebarGroupContent>
 <div className="flex flex-col gap-4 text-xl">
-  <Link href="/dashboard" className="
-    flex items-center gap-3 px-3 py-2 rounded-lg
-    text-slate-600 transition-all duration-200 ease-in-out
-    hover:bg-white hover:text-black hover:font-heading
-    hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] 
-    hover:-translate-y-0.5
-    active:translate-y-0 active:shadow-inner
-  ">
+  <Link href="/dashboard" 
+className={`
+        relative flex items-center gap-3 px-3 py-2  transition-all duration-200 ease-in-out
+        ${pathname === "/dashboard" 
+          ? "bg-slate-600/20 text-black font-bold shadow-[0_4px_12px_rgba(0,0,0,0.08)] -translate-y-0.5" 
+          : "text-slate-600 hover:bg-white/50 hover:text-black hover:-translate-y-0.5"
+        }
+      `}
+  >
     <LayoutDashboard className="h-4 w-4" />
     <span className="">Dashboard</span>
   </Link>
-  <Link href="/analytics" className="
-    flex items-center gap-3 px-3 py-2 rounded-lg
-    text-slate-600 transition-all duration-200 ease-in-out
-    hover:bg-white  hover:text-black hover:font-heading
-    hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] 
-    hover:-translate-y-0.5
-    active:translate-y-0 active:shadow-inner
-  ">
+  <Link href="/dashboard/analytics" className={`
+        relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ease-in-out
+        ${pathname === "/dashboard/analytics" 
+          ? "bg-slate-600/20 text-black font-bold shadow-[0_4px_12px_rgba(0,0,0,0.08)] -translate-y-0.5" 
+          : "text-slate-600 hover:bg-white/50 hover:text-black hover:-translate-y-0.5"
+        }
+      `}>
     <BarChart3 className="h-4 w-4" />
     <span className="">Analytics </span>
   </Link>
-  <Link href="/patients" className="
-    flex items-center gap-3 px-3 py-2 rounded-lg
-    text-slate-600 transition-all duration-200 ease-in-out
-    hover:bg-white hover:text-black hover:font-heading
-    hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] 
-    hover:-translate-y-0.5
-    active:translate-y-0 active:shadow-inner
-  ">
+  <Link href="/patients" className={`
+        relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ease-in-out
+        ${pathname === "/patients" 
+          ? "bg-slate-600/20 text-black font-bold shadow-[0_4px_12px_rgba(0,0,0,0.08)] -translate-y-0.5" 
+          : "text-slate-600 hover:bg-white/50 hover:text-black hover:-translate-y-0.5"
+        }
+      `}>
     <Activity className="h-4 w-4" />
     <span className="">Patients</span>
   </Link>

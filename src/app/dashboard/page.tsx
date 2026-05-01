@@ -7,9 +7,22 @@ import {
   ArrowUpRight,
   ArrowDownRight 
 } from "lucide-react";
-import { PatientChart } from "@/components/custom/patient-chart";
-import { DepartmentRadar } from "@/components/custom/department-radar";
-import { ComplaintsDonut } from "@/components/custom/complaints-polar";
+import dynamic from 'next/dynamic';
+import { StatCard } from "@/components/custom/stat-card";
+
+const PatientChart = dynamic(() => import("@/components/custom/patient-chart").then(mod => mod.PatientChart), { 
+  ssr: false,
+  loading: () => <div className="h-75 bg-slate-100 animate-pulse rounded-xl" /> 
+});
+const DepartmentRadar = dynamic(() => import("@/components/custom/department-radar").then(mod => mod.DepartmentRadar), { 
+  ssr: false,
+  loading: () => <div className="h-75 bg-slate-100 animate-pulse rounded-xl" /> 
+});
+const ComplaintsDonut = dynamic(() => import("@/components/custom/complaints-polar").then(mod => mod.ComplaintsDonut), { 
+  ssr: false,
+  loading: () => <div className="h-75 bg-slate-100 animate-pulse rounded-xl" /> 
+});
+
 
 const INDIAN_PATIENTS = [
   { name: "Aarav Sharma", id: "PT-501", status: "Critical" },
@@ -67,37 +80,47 @@ export default function HealthcareDashboard() {
       
       {/* 1. TOP METRICS with Colored Icons */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          title="Total Patients" 
-          value="1,284" 
-          icon={<Users className="size-5" />} 
-          trend="+12%" 
-          up 
-          colorClass="bg-emerald-100 text-emerald-600" 
-        />
-        <StatCard 
-          title="Active Admissions" 
-          value="42" 
-          icon={<Activity className="size-5" />} 
-          trend="+3%" 
-          up 
-          colorClass="bg-blue-100 text-blue-600" 
-        />
-        <StatCard 
-          title="Revenue (MTD)" 
-          value="$42,500" 
-          icon={<DollarSign className="size-5" />} 
-          trend="-2%" 
-          colorClass="bg-amber-100 text-amber-600" 
-        />
-        <StatCard 
-          title="Consultations" 
-          value="156" 
-          icon={<Calendar className="size-5" />} 
-          trend="+18%" 
-          up 
-          colorClass="bg-purple-100 text-purple-600" 
-        />
+<StatCard 
+    title="Total Patients" 
+    value="1,284" 
+    icon={<Users className="size-5" />} 
+    trend="+12%" 
+    up 
+    iconStyle="bg-emerald-100 text-emerald-600"
+    gradientColors="from-emerald-400 to-teal-500" 
+  />
+
+  {/* 2. Active Admissions - Blue/Indigo Theme */}
+  <StatCard 
+    title="Active Admissions" 
+    value="42" 
+    icon={<Activity className="size-5" />} 
+    trend="+3%" 
+    up 
+    iconStyle="bg-blue-100 text-blue-600"
+    gradientColors="from-blue-400 to-indigo-500" 
+  />
+
+  {/* 3. Revenue (MTD) - Amber/Orange Theme */}
+  <StatCard 
+    title="Revenue (MTD)" 
+    value="$42,500" 
+    icon={<DollarSign className="size-5" />} 
+    trend="-2%" 
+    iconStyle="bg-amber-100 text-amber-600"
+    gradientColors="from-amber-400 to-orange-500" 
+  />
+
+  {/* 4. Consultations - Purple/Violet Theme */}
+  <StatCard 
+    title="Consultations" 
+    value="156" 
+    icon={<Calendar className="size-5" />} 
+    trend="+18%" 
+    up 
+    iconStyle="bg-purple-100 text-purple-600"
+    gradientColors="from-purple-400 to-violet-500" 
+  />
       </div>
 
       {/* Rest of your Dashboard layout remains the same... */}
@@ -106,7 +129,7 @@ export default function HealthcareDashboard() {
 {/* Large Chart Area */}
 <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
 <div className="flex justify-between items-center mb-6">
-<h3 className="font-bold text-lg">Patient Flow Analysis</h3>
+
 
 </div>
 {/* Placeholder for your actual Chart (e.g., Recharts or Chart.js) */}
@@ -157,39 +180,7 @@ View All Records
 }
 // --- SUB-COMPONENTS FOR CLEANER CODE ---
 
-function StatCard({ 
-  title, 
-  value, 
-  icon, 
-  trend, 
-  up, 
-  colorClass 
-}: { 
-  title: string, 
-  value: string, 
-  icon: any, 
-  trend: string, 
-  up?: boolean,
-  colorClass: string // New prop for icon styling
-}) {
-  return (
-    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
-      <div className="flex justify-between items-start">
-        {/* Icon with Dynamic Colors and Soft Shadow */}
-        <div className={`p-3 rounded-xl transition-all duration-300 ${colorClass} shadow-lg shadow-current/20 group-hover:scale-110`}>
-          {icon}
-        </div>
-        <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${up ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-          {trend} {up ? <ArrowUpRight className="size-3 ml-1" /> : <ArrowDownRight className="size-3 ml-1" />}
-        </div>
-      </div>
-      <div className="mt-4">
-        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">{title}</p>
-        <h4 className="text-3xl font-bold text-slate-900 mt-1">{value}</h4>
-      </div>
-    </div>
-  );
-}
+
 function PatientItem({ name, id, status }: { name: string, id: string, status: string }) {
   const statusColors: any = {
     Stable: "bg-green-100 text-green-700",

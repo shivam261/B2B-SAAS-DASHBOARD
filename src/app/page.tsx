@@ -1,20 +1,6 @@
 import Image from "next/image";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-} from "@/components/ui/field"
 
 import LoginForm from "@/components/custom/login_form"
 import SignupForm from "@/components/custom/signup_form"
