@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -24,6 +24,7 @@ interface PatientChartProps {
 
 export function PatientChart({ dayData, monthData, yearData }: PatientChartProps) {
   const [view, setView] = useState<"day" | "month" | "year">("month")
+
 
   const dataMap = {
     day: dayData,
@@ -57,7 +58,7 @@ export function PatientChart({ dayData, monthData, yearData }: PatientChartProps
         </div>
       </div>
 
-      <div className="h-75 w-full">
+      <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={dataMap[view]}>
             <defs>

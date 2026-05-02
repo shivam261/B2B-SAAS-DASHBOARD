@@ -1,109 +1,189 @@
 "use client";
 
-import React, { useState } from "react";
-import { LayoutGrid, List, User, Calendar, Activity, ChevronRight } from "lucide-react";
-import { Patient, PatientCard } from "@/components/custom/patient-card";
-// Sample Data
-export const PATIENTS: Patient[] = [
-  { id: "1", name: "Aarav Sharma", age: 45, status: "Stable", lastVisit: "2026-04-28", condition: "Hypertension" },
-  { id: "2", name: "Priya Patel", age: 32, status: "Critical", lastVisit: "2026-05-01", condition: "Post-Op Recovery" },
-  { id: "3", name: "Vikram Malhotra", age: 58, status: "Stable", lastVisit: "2026-04-15", condition: "Diabetes Type 2" },
-  { id: "4", name: "Ananya Iyer", age: 29, status: "Stable", lastVisit: "2026-04-30", condition: "Routine Checkup" },
-  { id: "5", name: "Ishaan Verma", age: 67, status: "Critical", lastVisit: "2026-05-02", condition: "Cardiac Arrest Recovery" },
-  { id: "6", name: "Meera Deshmukh", age: 41, status: "Stable", lastVisit: "2026-04-25", condition: "Thyroid Management" },
-  { id: "7", name: "Arjun Rao", age: 35, status: "Stable", lastVisit: "2026-05-01", condition: "Physiotherapy" },
-  { id: "8", name: "Saanvi Kulkarni", age: 22, status: "Stable", lastVisit: "2026-04-29", condition: "Viral Fever" },
-  { id: "9", name: "Kabir Singh", age: 52, status: "Critical", lastVisit: "2026-05-02", condition: "Respiratory Distress" },
-  { id: "10", name: "Riya Kapoor", age: 12, status: "Stable", lastVisit: "2026-04-20", condition: "Pediatric Consultation" },
-  { id: "11", name: "Aditya Joshi", age: 74, status: "Stable", lastVisit: "2026-04-18", condition: "Arthritis" },
-  { id: "12", name: "Zara Sheikh", age: 31, status: "Stable", lastVisit: "2026-05-01", condition: "Antenatal Care" },
-];
+import React, { useState, useMemo } from "react";
+import { 
+  LayoutGrid, 
+  List, 
+  Search, 
+  ArrowUpNarrowWide, 
+  ArrowDownWideNarrow, 
+  Users, 
+  Activity, 
+  Calendar, 
+  AlertCircle 
+} from "lucide-react";
+import { PATIENTS } from "@/data/patient";
+import { columns } from "@/components/custom/tables/patients/columns";
+import { DataTable } from "@/components/custom/tables/patients/data-table";
+import { PatientGridView } from "@/components/custom/PatientGridView";
+import { StatCard } from "@/components/custom/stat-card"; // Assuming this is the path
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function PatientPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  // --- Analytics Logic ---
+  const stats = useMemo(() => {
+    const total = PATIENTS.length;
+    
+    // Average Age
+    const avgAge = total > 0 
+      ? Math.round(PATIENTS.reduce((acc, curr) => acc + curr.age, 0) / total) 
+      : 0;
+
+    // Critical Patients
+    const criticalCount = PATIENTS.filter(p => p.status === "Critical").length;
+
+    // Visits in last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentVisits = PATIENTS.filter(p => new Date(p.lastVisit) >= sevenDaysAgo).length;
+
+    return { total, avgAge, criticalCount, recentVisits };
+  }, []);
+
+  // --- Filtering & Sorting Logic ---
+  const processedPatients = useMemo(() => {
+    let filtered = PATIENTS.filter((p) =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.condition.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return filtered.sort((a, b) => {
+      let comparison = 0;
+      if (sortBy === "age") {
+        comparison = a.age - b.age;
+      } else if (sortBy === "lastVisit") {
+        comparison = new Date(a.lastVisit).getTime() - new Date(b.lastVisit).getTime();
+      } else {
+        comparison = a.name.localeCompare(b.name);
+      }
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+  }, [searchQuery, sortBy, sortOrder]);
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header with View Toggle */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-6 space-y-6 bg-slate-50/50 min-h-screen">
+      {/* 1. Analytics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Patients"
+          value={stats.total.toString()}
+          trend="+4% from last month"
+          up={true}
+          icon={<Users className="size-5" />}
+          gradientColors="from-blue-500 to-indigo-600"
+          iconStyle="text-blue-600 bg-blue-100"
+        />
+        <StatCard
+          title="Average Age"
+          value={`${stats.avgAge} yrs`}
+          trend="Stable"
+          up={true}
+          icon={<Activity className="size-5" />}
+          gradientColors="from-emerald-500 to-teal-600"
+          iconStyle="text-emerald-600 bg-emerald-100"
+        />
+        <StatCard
+          title="Recent Visits"
+          value={stats.recentVisits.toString()}
+          trend="Last 7 days"
+          up={true}
+          icon={<Calendar className="size-5" />}
+          gradientColors="from-amber-500 to-orange-600"
+          iconStyle="text-amber-600 bg-amber-100"
+        />
+        <StatCard
+          title="Critical Cases"
+          value={stats.criticalCount.toString()}
+          trend="+2 since yesterday"
+          up={false}
+          icon={<AlertCircle className="size-5" />}
+          gradientColors="from-rose-500 to-red-600"
+          iconStyle="text-rose-600 bg-rose-100"
+        />
+      </div>
+
+      {/* 2. Header & Controls Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Patient Directory</h1>
-          <p className="text-sm text-slate-500">Manage and monitor current patient records</p>
+          <p className="text-sm text-slate-500">Manage and monitor records</p>
         </div>
 
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
-          <button
-            onClick={() => setViewMode("list")}
-            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              viewMode === "list" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
-            }`}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <Input
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-white border-slate-200 shadow-sm focus-visible:ring-blue-500"
+            />
+          </div>
+
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-40 bg-white shadow-sm border-slate-200">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Name</SelectItem>
+              <SelectItem value="age">Age</SelectItem>
+              <SelectItem value="lastVisit">Last Visit</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button
+            variant="outline"
+            size="icon"
+            className="bg-white border-slate-200 text-slate-600 cursor-pointer shadow-sm hover:text-blue-600"
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
           >
-            <List className="size-4" /> List
-          </button>
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              viewMode === "grid" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            <LayoutGrid className="size-4" /> Grid
-          </button>
+            {sortOrder === "asc" ? <ArrowUpNarrowWide className="size-4" /> : <ArrowDownWideNarrow className="size-4" />}
+          </Button>
+
+          <div className="flex bg-slate-200/50 p-1 rounded-xl border border-slate-200 shadow-inner">
+             <button
+              onClick={() => setViewMode("list")}
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                viewMode === "list" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              <List className="size-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                viewMode === "grid" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              <LayoutGrid className="size-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Conditional Rendering of Views */}
-      {viewMode === "list" ? (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Patient</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Condition</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Last Visit</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {PATIENTS.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
-                        {p.name.split(" ").map((n) => n[0]).join("")}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">{p.name}</p>
-                        <p className="text-xs text-slate-400">Age: {p.age}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 font-medium">{p.condition}</td>
-                  <td className="px-6 py-4">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase ${
-                      p.status === "Critical" ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600"
-                    }`}>
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{p.lastVisit}</td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 group-hover:text-blue-600 transition-colors">
-                      <ChevronRight className="size-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PATIENTS.map((p) => (
-         <PatientCard key={p.id} patient={p} />
-          ))}
-        </div>
-      )}
+      {/* 3. Content Section */}
+      <div className="transition-all duration-500">
+        {viewMode === "list" ? (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <DataTable columns={columns} data={processedPatients} />
+          </div>
+        ) : (
+          <PatientGridView data={processedPatients} itemsPerPage={8} />
+        )}
+      </div>
     </div>
   );
 }

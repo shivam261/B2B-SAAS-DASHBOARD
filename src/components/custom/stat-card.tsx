@@ -73,7 +73,7 @@ export function StatCard({
       </div>
       
       {/* 2. Bottom Decorative Gradient Line */}
-      <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientColors} opacity-0 group-hover:opacity-100 transition-opacity`} />
+      <div className={`absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r ${gradientColors} opacity-0 group-hover:opacity-100 transition-opacity`} />
     </div>
   );
 }

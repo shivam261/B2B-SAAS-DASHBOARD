@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { StatCard } from "@/components/custom/stat-card";
+import { PatientItem } from "@/components/custom/patient-item";
+import {INDIAN_PATIENTS, COMPLAINT_DATA, DUMMY_DAYS, DUMMY_MONTHS, DUMMY_YEARS, DEPT_DATA} from "@/data/dashbaord";
 
 const PatientChart = dynamic(() => import("@/components/custom/patient-chart").then(mod => mod.PatientChart), { 
   ssr: false,
@@ -24,56 +26,7 @@ const ComplaintsDonut = dynamic(() => import("@/components/custom/complaints-pol
 });
 
 
-const INDIAN_PATIENTS = [
-  { name: "Aarav Sharma", id: "PT-501", status: "Critical" },
-  { name: "Ishani Patel", id: "PT-502", status: "Stable" },
-  { name: "Vihaan Gupta", id: "PT-503", status: "Observation" },
-  { name: "Ananya Iyer", id: "PT-504", status: "Stable" },
-  { name: "Aditya Verma", id: "PT-505", status: "Critical" },
-  { name: "Saanvi Reddy", id: "PT-506", status: "Stable" },
-  { name: "Arjun Malhotra", id: "PT-507", status: "Observation" },
-  { name: "Kavya Nair", id: "PT-508", status: "Stable" },
-  { name: "Rohan Deshmukh", id: "PT-509", status: "Critical" },
-  { name: "Zoya Khan", id: "PT-510", status: "Stable" },
-  { name: "Shivam Tripathi", id: "PT-590", status: "Critical" },
-];
-const COMPLAINT_DATA = [
-  { department: "Cardiology", count: 12 },
-  { department: "Pediatrics", count: 45 },
-  { department: "Radiology", count: 8 },
-  { department: "Orthopedics", count: 22 },
-  { department: "Emergency", count: 58 },
-  { department: "Neurology", count: 15 },
-]
-const DUMMY_DAYS = [
-  { label: "Mon", value: 40 },
-  { label: "Tue", value: 30 },
-  { label: "Wed", value: 65 },
-  { label: "Thu", value: 45 },
-  { label: "Fri", value: 90 },
-]
 
-const DUMMY_MONTHS = [
-  { label: "Jan", value: 400 },
-  { label: "Feb", value: 300 },
-  { label: "Mar", value: 500 },
-  { label: "Apr", value: 280 },
-  { label: "May", value: 590 },
-]
-
-const DUMMY_YEARS = [
-  { label: "2023", value: 4500 },
-  { label: "2024", value: 5200 },
-  { label: "2025", value: 6100 },
-]
-const DEPT_DATA = [
-  { department: "Cardiology", patients: 120, fullMark: 150 },
-  { department: "Pediatrics", patients: 98, fullMark: 150 },
-  { department: "Radiology", patients: 86, fullMark: 150 },
-  { department: "Orthopedics", patients: 99, fullMark: 150 },
-  { department: "Emergency", patients: 145, fullMark: 150 },
-  { department: "Neurology", patients: 40, fullMark: 150 },
-]
 export default function HealthcareDashboard() {
   return (
     <div className="p-6 space-y-6 min-h-screen w-full bg-linear-to-tr from-gray-50 via-white to-indigo-50/30">
@@ -180,33 +133,3 @@ View All Records
 }
 // --- SUB-COMPONENTS FOR CLEANER CODE ---
 
-
-function PatientItem({ name, id, status }: { name: string, id: string, status: string }) {
-  const statusColors: any = {
-    Stable: "bg-green-100 text-green-700",
-    Critical: "bg-red-100 text-red-700",
-    Observation: "bg-amber-100 text-amber-700",
-  };
-
-  return (
-    <div className="flex items-center justify-between group cursor-pointer w-full p-2 rounded-xl transition-all hover:bg-slate-50">
-      <div className="flex items-center gap-3">
-        {/* Avatar stays blue-100, which is fine for the icon circle */}
-        <div className="size-10 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">
-          {name.split(' ').map(n => n[0]).join('')}
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">
-            {name}
-          </p>
-          <p className="text-xs text-slate-400 font-medium">{id}</p>
-        </div>
-      </div>
-      
-      {/* Status Badge */}
-      <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${statusColors[status]}`}>
-        {status}
-      </span>
-    </div>
-  );
-}
