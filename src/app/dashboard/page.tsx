@@ -6,10 +6,11 @@ import {
   Calendar,
 } from "lucide-react";
 import dynamic from 'next/dynamic';
+import {useNotifications} from "@/hooks/notification";
 import { StatCard } from "@/components/custom/stat-card";
 import CampaignChart from "@/components/custom/card-chart"; 
 import { COMPLAINT_DATA, DUMMY_DAYS, DUMMY_MONTHS, DUMMY_YEARS, DEPT_DATA} from "@/data/dashbaord";
-
+import LineChart from "@/components/custom/card-chart-line";
 const PatientChart = dynamic(() => import("@/components/custom/patient-chart").then(mod => mod.PatientChart), { 
   ssr: false,
   loading: () => <div className="h-75 bg-slate-100 animate-pulse rounded-xl" /> 
@@ -25,10 +26,11 @@ const ComplaintsDonut = dynamic(() => import("@/components/custom/complaints-pol
 
 // Data constants
 const OCCUPANCY_DATA = [{ day: "M", value: 45 }, { day: "T", value: 52 }, { day: "W", value: 48 }, { day: "T", value: 61 }, { day: "F", value: 55 }, { day: "S", value: 40 }, { day: "S", value: 38 }];
-const SATISFACTION_DATA = [{ day: "M", value: 85 }, { day: "T", value: 88 }, { day: "W", value: 92 }, { day: "T", value: 90 }, { day: "F", value: 94 }, { day: "S", value: 98 }, { day: "S", value: 95 }];
+const SATISFACTION_DATA = [{ day: "M", value: 35 }, { day: "T", value: 88 }, { day: "W", value: 55 }, { day: "T", value: 90 }, { day: "F", value: 45 }, { day: "S", value: 82 }, { day: "S", value: 95 }];
 const LAB_DATA = [{ day: "M", value: 12 }, { day: "T", value: 18 }, { day: "W", value: 14 }, { day: "T", value: 10 }, { day: "F", value: 22 }, { day: "S", value: 15 }, { day: "S", value: 11 }];
 
 export default function HealthcareDashboard() {
+  useNotifications();
   return (
     <div className="p-6 space-y-10 min-h-screen w-full bg-linear-to-tr from-gray-50 via-white to-indigo-50/30">
       
@@ -50,9 +52,9 @@ export default function HealthcareDashboard() {
             subtitle="Current In-patient capacity"
             footerText="Updated 5 mins ago"
           />
-          <CampaignChart 
+          <LineChart 
             data={SATISFACTION_DATA}
-            color="green"
+            color="pink"
             title="Patient Satisfaction"
             subtitle="Avg. discharge survey score"
             footerText="Last survey 1 hour ago"
@@ -64,6 +66,7 @@ export default function HealthcareDashboard() {
             subtitle="Avg. test processing time"
             footerText="System sync 12 mins ago"
           />
+
       </div>
 
       {/* 3. LOWER ANALYTICS SECTION */}

@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth,signOut } from "firebase/auth";
-
+import { getMessaging } from "firebase/messaging";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,5 +13,5 @@ const firebaseConfig = {
 // Logic: If an app exists, use it; otherwise, initialize a new one.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-
-export { app, auth, signOut };
+const messaging = typeof window !== "undefined" ? getMessaging(app) : null;
+export { app, auth, signOut,messaging };

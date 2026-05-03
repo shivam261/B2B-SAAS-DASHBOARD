@@ -9,7 +9,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Activity } from "lucide-react"; 
-import CampaignChart from "@/components/custom/card-chart";
+
 
 export default function Home() {
   return (
