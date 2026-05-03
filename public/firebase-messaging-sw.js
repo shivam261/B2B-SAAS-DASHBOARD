@@ -4,7 +4,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 firebase.initializeApp({
   apiKey: "AIzaSyCZdjizbJ95flnxwDXB26RoVEgKEdqg8M4", // Paste values directly here or use a build step
   authDomain: "ragaai-9ec6b.firebaseapp.com",
-  projectId: "agaai-9ec6b",
+  projectId: "ragaai-9ec6b",
   storageBucket:"ragaai-9ec6b.firebasestorage.app",
   messagingSenderId: "224386444283",
   appId:"1:224386444283:web:8ab865740add09b616795e"

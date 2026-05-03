@@ -3,6 +3,8 @@
     import {useRouter}from "next/navigation";
     import {signInWithEmailAndPassword} from "firebase/auth";
     import { auth } from "@/lib/firebase";
+
+    import { LoaderOne } from "@/components/ui/loader"; 
     import {
     Card,
     CardContent,
@@ -17,11 +19,13 @@
     } from "@/components/ui/field";
     import { Input } from "@/components/ui/input";
     import { Button } from "@/components/ui/button";
+import { Sign } from "crypto";
 
     export default function LoginForm() {
         const router=useRouter();
-        const [email,setemail]=useState<string>("");
-        const [password,setpassword]=useState<string>("");
+        const [email,setemail]=useState<string>("ragaai@gmail.com");
+        const [loading, setLoading] = useState<boolean>(false);
+        const [password,setpassword]=useState<string>("123456");
         const handleEmailChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
             setemail(e.target.value);
         }
@@ -57,8 +61,10 @@
             e.preventDefault();
             console.log("Email:", email);
             console.log("Password:", password);
+         
             if(validate()){
                 // Proceed with form submission (e.g., API call)
+                setLoading(true);
                 signInWithEmailAndPassword(auth,email,password).then((userCredential)=>{
                     const user=userCredential.user;
                     console.log("User signed in:", user);
@@ -66,11 +72,13 @@
 
                 }).catch((error)=>{
                     console.error("Error signing in user:", error);
+                       setLoading(false);
                 });
                 console.log("Form is valid. Submitting...");
             }else{
                 console.log("Form has errors. Fix them before submitting.");
             }
+
         }
     return (
         <Card className="w-full max-w-md bg-white/1 backdrop-blur-md border-white/50 shadow-2xl rounded-3xl">
@@ -129,8 +137,8 @@
             </span>
             </Field>
 
-            <Button type="submit" className="w-full relative z-100          0 bg-slate-900 hover:bg-slate-800 text-white py-6 rounded-xl text-lg font-semibold transition-all shadow-lg active:scale-[0.98]">
-            Sign In
+            <Button type="submit" className="w-full relative z-100  cursor-pointer bg-slate-900 hover:bg-slate-800 text-white py-6 rounded-xl text-lg font-semibold transition-all shadow-lg active:scale-[0.98]">
+            {loading ? <LoaderOne /> : "Sign In"}   
             </Button>
         </CardContent>
 

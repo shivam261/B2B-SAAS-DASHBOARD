@@ -8,22 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LoaderOne } from "@/components/ui/loader"; 
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 export default function SignupForm() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
     confirmPassword?: string;
   }>({});
-
+const router=useRouter();
   const validate = () => {
     const newErrors: typeof errors = {};
 
@@ -55,13 +58,17 @@ export default function SignupForm() {
     if (validate()) {
       console.log("Creating Account with:", { email, password });
       // Proceed with your API call for registration
+      setLoading(true);
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           console.log("User created:", user);
+          setLoading(false);
+          router.push("/dashboard");
         })
         .catch((error) => {
           console.error("Error creating user:", error);
+          setLoading(false);
         });
     }
   };
@@ -124,8 +131,8 @@ export default function SignupForm() {
             {errors.confirmPassword && <span className="text-xs text-red-500 mt-1">{errors.confirmPassword}</span>}
           </Field>
 
-          <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white py-6 rounded-xl text-lg font-semibold transition-all shadow-lg active:scale-[0.98]">
-            Create Account
+          <Button type="submit" className="w-full bg-slate-900 cursor-pointer hover:bg-slate-800 text-white py-6 rounded-xl text-lg font-semibold transition-all shadow-lg active:scale-[0.98]">
+            {loading ? <LoaderOne /> : "Create Account"}
           </Button>
         </CardContent>
 

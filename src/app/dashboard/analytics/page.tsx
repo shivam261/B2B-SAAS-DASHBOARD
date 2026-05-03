@@ -141,11 +141,12 @@ const { initNotifications, isEnabled } = useNotifications();
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Health Analytics</h1>
+          
           <p className="text-sm text-slate-500">Showing data for {timeRange === "7D" ? "Last Week" : timeRange === "30D" ? "Last Month" : "Past Year"}</p>
-          <button 
+                    <button 
         onClick={initNotifications}
         title={isEnabled ? "Alerts are active" : "Enable Stock Alerts"}
-        className={`p-1.5 rounded-lg transition-all flex items-center justify-center ${
+        className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 justify-center ${
           isEnabled 
           ? "text-emerald-600 bg-emerald-50 hover:bg-emerald-100" 
           : "text-slate-500 hover:bg-white animate-pulse"
@@ -155,11 +156,12 @@ const { initNotifications, isEnabled } = useNotifications();
           <Bell className="size-4 fill-current" />
         ) : (
           <BellOff className="size-4" />
-        )}
+        )}  SEND ALERTS
       </button>
         </div>
         
         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          
           {(["7D", "30D", "1Y"] as TimeRange[]).map((range) => (
             <button
               key={range}

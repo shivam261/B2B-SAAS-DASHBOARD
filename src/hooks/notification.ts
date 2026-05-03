@@ -29,8 +29,8 @@ export function useNotifications() {
         setIsEnabled(true);
         
         // Local "Success" Alert
-        new Notification("Hospital System Active", {
-          body: "Stock alerts are now enabled.",
+        new Notification("⚠️ Low Stock Alert: Oxygen Cylinder", {
+          body: "Current inventory: 85. Threshold is 100. Please reorder immediately to avoid depletion.",
           icon: "/logo.png"
         });
       }
