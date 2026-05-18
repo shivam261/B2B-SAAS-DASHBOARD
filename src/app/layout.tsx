@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "B2B Healthcare",
   description: "AI SAAS for B2B Healthcare",
+
 };
 
 export default function RootLayout({
@@ -28,6 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     > 
+
       {/* 
           1. min-h-screen: Ensures body is at least 100% of viewport height.
           2. w-full: Ensures it spans the full width.

@@ -9,17 +9,10 @@ interface StatCardProps {
   icon: React.ReactNode;
   trend: string;
   up?: boolean;
-  /**
-   * Expects Tailwind gradient classes, 
-   * e.g., "from-emerald-500 to-emerald-600" or "from-blue-500 to-indigo-600"
-   */
   gradientColors: string; 
-  /**
-   * The text/bg color for the icon container
-   * e.g., "text-emerald-600 bg-emerald-100"
-   */
   iconStyle: string; 
 }
+
 export function StatCard({
   title,
   value,
@@ -32,28 +25,35 @@ export function StatCard({
   return (
     <div className="relative group p-5 rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 cursor-default bg-white">
       
-      {/* Increased opacity on hover for a clearer "glow" effect */}
       <div className={`absolute inset-0 opacity-0 rounded-2xl bg-linear-to-br ${gradientColors} transition-opacity duration-500 group-hover:opacity-[0.07]`} />
 
       <div className="relative z-10">
         <div className="flex justify-between items-start">
           
-          <div 
-            className={`absolute -top-6 -left-1 p-3.5 rounded-xl transition-all duration-300 
-            ${iconStyle} 
-            /* Using shadow-xl with a slight color tint makes it look more vibrant */
-            shadow-xl shadow-current/20 translate-y-[-20%]
-            group-hover:scale-110 group-hover:shadow-current/40 group-hover:saturate-150`}
-          >
-            {/* The icon itself */}
-            <div className="drop-shadow-md">
-              {icon}
+          {/* 
+            FIX: Layered Architecture 
+            z-10 ensures the shadows stay above the card background.
+          */}
+          <div className="absolute -top-6 -left-1 z-10 translate-y-[-20%]">
+            
+            {/* 1. SCALE LAYER: Only handles the zoom. GPU handles this effortlessly. */}
+            <div className={`relative rounded-xl transform-gpu transition-transform duration-300 group-hover:scale-110 ${iconStyle}`}>
+              
+              {/* 2. BASE SHADOW: Placed behind the background (-z-10) */}
+              <div className="absolute inset-0 -z-10 rounded-xl shadow-xl shadow-current/20" />
+              
+              {/* 3. HOVER SHADOW: Fades in via opacity. Zero repaint lag. */}
+              <div className="absolute inset-0 -z-10 rounded-xl shadow-xl shadow-current/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              
+              {/* 4. CONTENT LAYER */}
+              <div className="relative z-10 p-3.5 drop-shadow-md transition-[filter] duration-300 group-hover:saturate-150">
+                {icon}
+              </div>
             </div>
           </div>
 
           <div className="w-12 h-10" />
 
-          {/* Trend Pill - Made colors more vivid */}
           <div 
             className={`flex items-center text-xs font-black px-2.5 py-1 rounded-full border ${
               up 
@@ -76,7 +76,6 @@ export function StatCard({
         </div>
       </div>
       
-      {/* Bottom line made slightly thicker for more color presence */}
       <div className={`absolute bottom-0 left-0 right-0 h-1.5 rounded-b-2xl bg-linear-to-r ${gradientColors} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
     </div>
   );
