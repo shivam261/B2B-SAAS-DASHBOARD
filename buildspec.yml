@@ -1,22 +1,36 @@
 version: 0.2
 
+env:
+  variables:
+    NEXT_PUBLIC_FIREBASE_API_KEY: /myapp/NEXT_PUBLIC_FIREBASE_API_KEY
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: /myapp/NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: /myapp/NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: /myapp/NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: /myapp/NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    NEXT_PUBLIC_FIREBASE_APP_ID: /myapp/NEXT_PUBLIC_FIREBASE_APP_ID
+    NEXT_PUBLIC_FIREBASE_VAPID_KEY: /myapp/NEXT_PUBLIC_FIREBASE_VAPID_KEY
 phases:
   install:
     runtime-versions:
       nodejs: 20
+    commands:
+      - npm install -g pnpm@9
+      - pnpm install --frozen-lockfile
+
   pre_build:
     commands:
-      - npm install -g pnpm
-      - pnpm install
+      - echo "Running lint..."
+      - pnpm lint
+
   build:
     commands:
-      - pnpm run build
-  post_build:
-    commands:
-      - echo "Build complete"
+      - echo "Building Next.js app..."
+      - pnpm build
 
 artifacts:
   files:
     - '**/*'
-  name: BuildArtifact
-  discard-paths: yes
+  base-directory: .
+  exclude-paths:
+    - node_modules/**/*
+    - .git/**/*
