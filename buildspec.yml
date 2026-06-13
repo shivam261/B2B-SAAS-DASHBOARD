@@ -21,6 +21,8 @@ phases:
     commands:
       - echo "Running lint..."
       - pnpm lint
+      - echo "PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID"
+      - pnpm lint
 
   build:
     commands:
