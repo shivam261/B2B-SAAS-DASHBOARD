@@ -2,15 +2,15 @@
 
 import React from "react";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   Users, 
   Activity, 
   DollarSign, 
   TrendingUp, 
-  Filter, 
+
   Download,
-  Calendar as CalendarIcon
+
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 // Assuming these are your separate component files
@@ -25,13 +25,6 @@ const InventoryIntelligence = dynamic(
   }
 );
 // 1. Lazy load ComplaintsDonut
-const ComplaintsDonut = dynamic(
-  () => import("@/components/custom/complaints-polar").then((mod) => mod.ComplaintsDonut),
-  { 
-    ssr: false, 
-    loading: () => <div className="w-full h-112.5 bg-slate-50 animate-pulse rounded-3xl border border-slate-100" /> 
-  }
-);
 
 const OperationalThroughput = dynamic(
   () => import("@/components/custom/operational-throughput").then((mod) => mod.OperationalThroughput),
@@ -40,20 +33,30 @@ const OperationalThroughput = dynamic(
     loading: () => <div className="w-full h-87.5 bg-slate-50 animate-pulse rounded-3xl border border-slate-100" /> 
   }
 );
+
+/**
+ * Wrapper to prevent hydration mismatch with dynamic components
+ */
+const ClientOnly = ({ children }: { children: React.ReactNode }) => {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsClient(true);
+  }, []);
+  
+  if (!isClient) {
+    return <div className="w-full h-87.5 bg-slate-50 animate-pulse rounded-3xl border border-slate-100" />;
+  }
+  
+  return <>{children}</>;
+};
+
 /**
  * A reusable skeleton loader to maintain layout stability 
  * while the heavy JS for Recharts is downloading.
  */
-function ChartPlaceholder({ height }: { height: string }) {
-  return (
-    <div className={`w-full ${height} bg-slate-50/50 animate-pulse rounded-3xl flex items-center justify-center border border-slate-100`}>
-      <div className="flex flex-col items-center gap-2">
-        <div className="size-8 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin" />
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Loading Analytics...</span>
-      </div>
-    </div>
-  );
-}
+
 const DATA_SETS = {
   "7D": {
     // Weekly patient volume: Peaks mid-week, dips Sunday
@@ -125,7 +128,16 @@ const DATA_SETS = {
     ]
   }
 };
-
+type DepartmentData = {
+  department: string;
+  patients: number;
+  fullMark: number;
+};
+type Doctor = {
+  name: string;
+  cases: number;
+  color: string;
+};
 type TimeRange = "7D" | "30D" | "1Y";
 
 export default function AnalyticsPage() {
@@ -143,7 +155,8 @@ const { initNotifications, isEnabled } = useNotifications();
           <h1 className="text-2xl font-bold text-slate-900">Health Analytics</h1>
           
           <p className="text-sm text-slate-500">Showing data for {timeRange === "7D" ? "Last Week" : timeRange === "30D" ? "Last Month" : "Past Year"}</p>
-                    <button 
+                    <ClientOnly>
+            <button 
         onClick={initNotifications}
         title={isEnabled ? "Alerts are active" : "Enable Stock Alerts"}
         className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 justify-center ${
@@ -158,6 +171,7 @@ const { initNotifications, isEnabled } = useNotifications();
           <BellOff className="size-4" />
         )}  SEND ALERTS
       </button>
+          </ClientOnly>
         </div>
         
         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
@@ -226,12 +240,16 @@ const { initNotifications, isEnabled } = useNotifications();
         <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
           <h3 className="font-bold text-lg text-slate-800 mb-6">Operational Throughput</h3>
         <div className="h-87.5 w-full">
-    <OperationalThroughput data={activeData.throughput} /> 
+    <ClientOnly>
+      <OperationalThroughput data={activeData.throughput} />
+    </ClientOnly>
   </div>
         </div>
 
 <div className="lg:col-span-1">
-  <InventoryIntelligence />
+  <ClientOnly>
+    <InventoryIntelligence />
+  </ClientOnly>
 </div>
       </div>
 
@@ -257,7 +275,7 @@ const { initNotifications, isEnabled } = useNotifications();
         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Department Load</p>
         <p className="text-xs font-medium text-slate-400">Capacity used</p>
       </div>
-      {activeData.radar.map((dept: any) => (
+      {activeData.radar.map((dept: DepartmentData) => (
         <div key={dept.department} className="space-y-1">
           <div className="flex justify-between text-sm">
             <span className="font-semibold text-slate-700">{dept.department}</span>
@@ -303,7 +321,7 @@ const { initNotifications, isEnabled } = useNotifications();
           { name: "Dr. Aditya Verma", cases: 42, color: "bg-indigo-500" },
           { name: "Dr. Saanvi Reddy", cases: 38, color: "bg-emerald-500" },
           { name: "Dr. Rohan Deshmukh", cases: 35, color: "bg-blue-500" }
-        ].map((doc, i) => (
+        ].map((doc:Doctor) => (
           <div key={doc.name} className="flex items-center justify-between group cursor-default">
             <div className="flex items-center gap-3">
               <div className={`size-8 rounded-full ${doc.color} flex items-center justify-center text-[10px] font-bold text-white`}>

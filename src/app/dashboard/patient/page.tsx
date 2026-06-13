@@ -55,7 +55,7 @@ export default function PatientPage() {
 
   // --- Filtering & Sorting Logic ---
   const processedPatients = useMemo(() => {
-    let filtered = PATIENTS.filter((p) =>
+    const filtered = PATIENTS.filter((p) =>
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.condition.toLowerCase().includes(searchQuery.toLowerCase())
     );

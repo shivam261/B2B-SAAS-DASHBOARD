@@ -1,11 +1,16 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { messaging } from "@/lib/firebase";
 import { getToken, onMessage, Messaging } from "firebase/messaging";
 
 export function useNotifications() {
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      return Notification.permission === "granted";
+    }
+    return false;
+  });
 
   // Function to initialize - triggered by your button click
   const initNotifications = useCallback(async () => {
@@ -49,16 +54,6 @@ export function useNotifications() {
     }
   }, []);
 
-  // Check existing permission on mount
-  useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      if (Notification.permission === "granted") {
-        setIsEnabled(true);
-      }
-    }
-  }, []);
-
-  // THIS IS THE PART YOU WERE MISSING:
   return {
     initNotifications,
     isEnabled
